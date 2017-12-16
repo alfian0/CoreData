@@ -11,12 +11,12 @@ import CoreData
 
 class AppViewController: UITabBarController {
 
-    private var manageObjectContext: NSManagedObjectContext!
+    private var coreDataStack: CoreDataStack!
     
-    convenience init(manageObjectContext: NSManagedObjectContext) {
+    convenience init(coreDataStack: CoreDataStack) {
         self.init()
         
-        self.manageObjectContext = manageObjectContext
+        self.coreDataStack = coreDataStack
     }
     
     override func viewDidLoad() {
@@ -27,11 +27,11 @@ class AppViewController: UITabBarController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let listController = ListTableViewController(manageObjectContext: manageObjectContext)
+        let listController = ListTableViewController(coreDataStack: coreDataStack)
             listController.tabBarItem.image = #imageLiteral(resourceName: "icon_list")
             listController.tabBarItem.title = "List"
         
-        let personController = PersonTableViewController(manageObjectContext: manageObjectContext)
+        let personController = PersonTableViewController(coreDataStack: coreDataStack)
             personController.tabBarItem.image = #imageLiteral(resourceName: "icon_me")
             personController.tabBarItem.title = "Person"
         

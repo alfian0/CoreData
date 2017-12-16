@@ -11,13 +11,13 @@ import CoreData
 
 class ListTableViewController: UITableViewController {
     
-    private var manageObjectContext: NSManagedObjectContext!
+    private var coreDataStack: CoreDataStack!
     private var toDos = [ToDo]()
     
-    convenience init(manageObjectContext: NSManagedObjectContext) {
+    convenience init(coreDataStack: CoreDataStack) {
         self.init()
         
-        self.manageObjectContext = manageObjectContext
+        self.coreDataStack = coreDataStack
     }
     
     override func viewDidLoad() {
@@ -69,14 +69,10 @@ class ListTableViewController: UITableViewController {
         if editingStyle == .delete {
             // Delete the row from the data source
             let toDo = toDos[indexPath.row]
-            manageObjectContext.delete(toDo)
-            do {
-                try manageObjectContext.save()
-                toDos.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .fade)
-            } catch {
-                fatalError("Cannot delete person object!")
-            }
+            coreDataStack.managedObjectContext.delete(toDo)
+            coreDataStack.saveContext()
+            toDos.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
@@ -112,7 +108,7 @@ class ListTableViewController: UITableViewController {
 extension ListTableViewController {
     
     @objc func addToDo(_ sender: AnyObject) -> Void {
-        guard let entity = NSEntityDescription.entity(forEntityName: "ToDo", in: manageObjectContext) else {
+        guard let entity = NSEntityDescription.entity(forEntityName: "ToDo", in: coreDataStack.managedObjectContext) else {
             fatalError("Could not find entity description!")
         }
         let alert = UIAlertController(title: "Add To Do", message: "Adding new something to do", preferredStyle: .alert)
@@ -126,20 +122,15 @@ extension ListTableViewController {
 
                 guard let title = alert.textFields?.first?.text, let desriptions = alert.textFields?[1].text else { return }
                 action.isEnabled = false
-                let toDo = ToDo(entity: entity, insertInto: self.manageObjectContext)
+                let toDo = ToDo(entity: entity, insertInto: self.coreDataStack.managedObjectContext)
                     toDo.title = title
                     toDo.descriptions = desriptions
-                
-                do {
-                    try self.manageObjectContext.save()
-                    self.toDos.append(toDo)
-                    self.navigationItem.rightBarButtonItems?[0].isEnabled = true
-                    self.tableView.beginUpdates()
-                    self.tableView.insertRows(at: [IndexPath(row: (self.toDos.count - 1), section: 0)], with: .fade)
-                    self.tableView.endUpdates()
-                } catch {
-                    fatalError("Cannot save new to do!")
-                }
+                self.coreDataStack.saveContext()
+                self.toDos.append(toDo)
+                self.navigationItem.rightBarButtonItems?[0].isEnabled = true
+                self.tableView.beginUpdates()
+                self.tableView.insertRows(at: [IndexPath(row: (self.toDos.count - 1), section: 0)], with: .fade)
+                self.tableView.endUpdates()
             }))
         
         present(alert, animated: true) {
@@ -166,11 +157,7 @@ extension ListTableViewController {
     }
     
     func reloadData(type: String? = nil) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-                return
-        }
         let fetchRequest = NSFetchRequest<ToDo>(entityName: "ToDo")
-        let persistentContainer = appDelegate.persistentContainer
         
         if let filter = type {
             let predicate = NSPredicate(format: "title == %@", filter)
@@ -178,7 +165,7 @@ extension ListTableViewController {
         }
         
         do {
-            let results = try persistentContainer.viewContext.fetch(fetchRequest)
+            let results = try coreDataStack.managedObjectContext.fetch(fetchRequest)
             toDos = results
             self.navigationItem.rightBarButtonItems?[1].isEnabled = true
         } catch {

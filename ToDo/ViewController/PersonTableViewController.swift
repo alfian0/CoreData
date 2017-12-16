@@ -11,13 +11,13 @@ import CoreData
 
 class PersonTableViewController: UITableViewController {
     
-    private var manageObjectContext: NSManagedObjectContext!
+    private var coreDataStack: CoreDataStack!
     private var persons = [Person]()
     
-    convenience init(manageObjectContext: NSManagedObjectContext) {
+    convenience init(coreDataStack: CoreDataStack) {
         self.init()
         
-        self.manageObjectContext = manageObjectContext
+        self.coreDataStack = coreDataStack
     }
     
     override func viewDidLoad() {
@@ -65,14 +65,10 @@ class PersonTableViewController: UITableViewController {
         if editingStyle == .delete {
             // Delete the row from the data source
             let person = persons[indexPath.row]
-            manageObjectContext.delete(person)
-            do {
-                try manageObjectContext.save()
-                persons.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .fade)
-            } catch {
-                fatalError("Cannot delete person object!")
-            }
+            coreDataStack.managedObjectContext.delete(person)
+            coreDataStack.saveContext()
+            persons.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
@@ -108,7 +104,7 @@ class PersonTableViewController: UITableViewController {
 extension PersonTableViewController {
     
     @objc func addPerson(_ sender: AnyObject) {
-        guard let entity = NSEntityDescription.entity(forEntityName: "Person", in: manageObjectContext) else {
+        guard let entity = NSEntityDescription.entity(forEntityName: "Person", in: coreDataStack.managedObjectContext) else {
             fatalError("Could not find entity description!")
         }
         let alert = UIAlertController(title: "Add Person", message: "Adding new person to do something", preferredStyle: .alert)
@@ -116,19 +112,15 @@ extension PersonTableViewController {
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
                 guard let text = alert.textFields?.first?.text else { return }
                 action.isEnabled = false
-                let person = Person(entity: entity, insertInto: self.manageObjectContext)
+                let person = Person(entity: entity, insertInto: self.coreDataStack.managedObjectContext)
                     person.name = text
 
-                do {
-                    try self.manageObjectContext.save()
-                    self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    self.persons.append(person)
-                    self.tableView.beginUpdates()
-                    self.tableView.insertRows(at: [IndexPath(row: (self.persons.count - 1), section: 0)], with: .fade)
-                    self.tableView.endUpdates()
-                } catch {
-                    fatalError("Cannot save new person!")
-                }
+                self.coreDataStack.saveContext()
+                self.navigationItem.rightBarButtonItem?.isEnabled = true
+                self.persons.append(person)
+                self.tableView.beginUpdates()
+                self.tableView.insertRows(at: [IndexPath(row: (self.persons.count - 1), section: 0)], with: .fade)
+                self.tableView.endUpdates()
             }))
         
         present(alert, animated: true) {
@@ -137,14 +129,10 @@ extension PersonTableViewController {
     }
     
     func reloadData() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            return
-        }
         let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        let persistentContainer = appDelegate.persistentContainer
         
         do {
-            let results = try persistentContainer.viewContext.fetch(fetchRequest)
+            let results = try coreDataStack.managedObjectContext.fetch(fetchRequest)
             persons = results
         } catch {
             fatalError("There was a fetch error!")
