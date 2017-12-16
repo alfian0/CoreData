@@ -132,6 +132,16 @@ extension ListTableViewController: NSFetchedResultsControllerDelegate {
         }
     }
     
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+        switch type {
+        case .insert:
+            self.tableView.insertSections([sectionIndex], with: .fade)
+        case .delete:
+            self.tableView.deleteSections([sectionIndex], with: .fade)
+        default: break
+        }
+    }
+    
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
     }
