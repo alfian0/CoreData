@@ -12,7 +12,7 @@ import CoreData
 class ListTableViewController: UITableViewController {
     
     var manageObjectContext: NSManagedObjectContext!
-    var toDos = [NSManagedObject]()
+    var toDos = [ToDo]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,13 +41,11 @@ class ListTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
         let toDo = toDos[indexPath.row]
         
-        if let title = toDo.value(forKey: "title") as? String, let descriptions = toDo.value(forKey: "descriptions") as? String {
-            cell.textLabel?.text = title
-            cell.detailTextLabel?.text = descriptions
-        }
+        cell.textLabel?.text = toDo.title
+        cell.detailTextLabel?.text = toDo.descriptions
         
         return cell
     }
@@ -113,7 +111,7 @@ extension ListTableViewController {
         let persistentContainer = appDelegate.persistentContainer
         
         do {
-            if let results = try persistentContainer.viewContext.fetch(fetchRequest) as? [NSManagedObject] {
+            if let results = try persistentContainer.viewContext.fetch(fetchRequest) as? [ToDo] {
                 toDos = results
             }
         } catch {

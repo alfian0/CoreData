@@ -113,9 +113,9 @@ extension AppDelegate {
         }
         
         for i in 1...25 {
-            let toDo = NSManagedObject(entity: entity, insertInto: persistentContainer.viewContext)
-            toDo.setValue("To Do #\(i)", forKey: "title")
-            toDo.setValue("Descriptions for #\(i)", forKey: "descriptions")
+            let toDo = ToDo(entity: entity, insertInto: persistentContainer.viewContext)
+                toDo.title = "To Do #\(i)"
+                toDo.descriptions = "Descriptions for #\(i)"
         }
         
         saveContext()
