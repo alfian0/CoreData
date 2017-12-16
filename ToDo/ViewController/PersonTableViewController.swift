@@ -107,7 +107,7 @@ class PersonTableViewController: UITableViewController {
 
 extension PersonTableViewController {
     
-    @objc func addPerson() {
+    @objc func addPerson(_ sender: AnyObject) {
         guard let entity = NSEntityDescription.entity(forEntityName: "Person", in: manageObjectContext) else {
             fatalError("Could not find entity description!")
         }
@@ -146,9 +146,10 @@ extension PersonTableViewController {
         do {
             let results = try persistentContainer.viewContext.fetch(fetchRequest)
             persons = results
-            tableView.reloadData()
         } catch {
             fatalError("There was a fetch error!")
         }
+        
+        tableView.reloadData()
     }
 }

@@ -24,7 +24,10 @@ class ListTableViewController: UITableViewController {
         super.viewDidLoad()
 
         navigationItem.title = "To Do"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addToDo))
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addToDo(_:))),
+            UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(filter(_:)))
+        ]
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -108,7 +111,7 @@ class ListTableViewController: UITableViewController {
 
 extension ListTableViewController {
     
-    @objc func addToDo() -> Void {
+    @objc func addToDo(_ sender: AnyObject) -> Void {
         guard let entity = NSEntityDescription.entity(forEntityName: "ToDo", in: manageObjectContext) else {
             fatalError("Could not find entity description!")
         }
@@ -130,7 +133,7 @@ extension ListTableViewController {
                 do {
                     try self.manageObjectContext.save()
                     self.toDos.append(toDo)
-                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self.navigationItem.rightBarButtonItems?[0].isEnabled = true
                     self.tableView.beginUpdates()
                     self.tableView.insertRows(at: [IndexPath(row: (self.toDos.count - 1), section: 0)], with: .fade)
                     self.tableView.endUpdates()
@@ -140,23 +143,48 @@ extension ListTableViewController {
             }))
         
         present(alert, animated: true) {
-            self.navigationItem.rightBarButtonItem?.isEnabled = false
+            self.navigationItem.rightBarButtonItems?[0].isEnabled = false
         }
     }
     
-    func reloadData() {
+    @objc func filter(_ sender: AnyObject) {
+        let alert = UIAlertController(title: "Filter", message: "Filter by type", preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "Belajar", style: .default, handler: { (action) in
+                self.reloadData(type: "Belajar")
+            }))
+            alert.addAction(UIAlertAction(title: "Kerja", style: .default, handler: { (action) in
+                self.reloadData(type: "Kerja")
+            }))
+            alert.addAction(UIAlertAction(title: "Semua", style: .default, handler: { (action) in
+                self.reloadData()
+            }))
+        
+        present(alert, animated: true) {
+            self.navigationItem.rightBarButtonItems?[1].isEnabled = false
+        }
+    }
+    
+    func reloadData(type: String? = nil) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
                 return
         }
         let fetchRequest = NSFetchRequest<ToDo>(entityName: "ToDo")
         let persistentContainer = appDelegate.persistentContainer
         
+        if let filter = type {
+            let predicate = NSPredicate(format: "title == %@", filter)
+            fetchRequest.predicate = predicate
+        }
+        
         do {
             let results = try persistentContainer.viewContext.fetch(fetchRequest)
             toDos = results
-            tableView.reloadData()
+            self.navigationItem.rightBarButtonItems?[1].isEnabled = true
         } catch {
             fatalError("There was a fetch error!")
         }
+        
+        tableView.reloadData()
     }
 }
