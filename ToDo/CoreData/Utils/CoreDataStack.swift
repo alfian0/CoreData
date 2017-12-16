@@ -42,17 +42,34 @@ class CoreDataStack: NSObject {
         return coordinator
     }()
     
-    lazy var managedObjectContext: NSManagedObjectContext = {
-        let managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+    private lazy var saveManagedObjectContext: NSManagedObjectContext = {
+        let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
             managedObjectContext.persistentStoreCoordinator = persistentStoreCoordinator
         
         return managedObjectContext
     }()
     
+    lazy var managedObjectContext: NSManagedObjectContext = {
+        let managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+            managedObjectContext.parent = saveManagedObjectContext
+        
+        return managedObjectContext
+    }()
+    
     func saveContext () {
-        if managedObjectContext.hasChanges {
+        guard managedObjectContext.hasChanges || saveManagedObjectContext.hasChanges else { return }
+        
+        managedObjectContext.performAndWait {
             do {
                 try managedObjectContext.save()
+            } catch {
+                fatalError("Error saving manage object context!")
+            }
+        }
+        
+        saveManagedObjectContext.performAndWait {
+            do {
+                try saveManagedObjectContext.save()
             } catch {
                 fatalError("Error saving manage object context!")
             }
