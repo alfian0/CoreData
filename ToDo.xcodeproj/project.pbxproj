@@ -10,9 +10,9 @@
 		ED360B981FE4C0C10031F89F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED360B971FE4C0C10031F89F /* AppDelegate.swift */; };
 		ED360B9A1FE4C0C10031F89F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED360B991FE4C0C10031F89F /* ViewController.swift */; };
 		ED360B9D1FE4C0C10031F89F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ED360B9B1FE4C0C10031F89F /* Main.storyboard */; };
-		ED360BA01FE4C0C10031F89F /* ToDo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ED360B9E1FE4C0C10031F89F /* ToDo.xcdatamodeld */; };
 		ED360BA21FE4C0C10031F89F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED360BA11FE4C0C10031F89F /* Assets.xcassets */; };
 		ED360BA51FE4C0C10031F89F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ED360BA31FE4C0C10031F89F /* LaunchScreen.storyboard */; };
+		ED360BAF1FE4C3130031F89F /* ToDo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ED360BAD1FE4C3130031F89F /* ToDo.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,10 +20,10 @@
 		ED360B971FE4C0C10031F89F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ED360B991FE4C0C10031F89F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		ED360B9C1FE4C0C10031F89F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		ED360B9F1FE4C0C10031F89F /* ToDo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ToDo.xcdatamodel; sourceTree = "<group>"; };
 		ED360BA11FE4C0C10031F89F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ED360BA41FE4C0C10031F89F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED360BA61FE4C0C10031F89F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ED360BAE1FE4C3130031F89F /* ToDo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ToDo.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,15 +56,23 @@
 		ED360B961FE4C0C10031F89F /* ToDo */ = {
 			isa = PBXGroup;
 			children = (
+				ED360BAC1FE4C3130031F89F /* CoreData */,
 				ED360B971FE4C0C10031F89F /* AppDelegate.swift */,
 				ED360B991FE4C0C10031F89F /* ViewController.swift */,
 				ED360B9B1FE4C0C10031F89F /* Main.storyboard */,
 				ED360BA11FE4C0C10031F89F /* Assets.xcassets */,
 				ED360BA31FE4C0C10031F89F /* LaunchScreen.storyboard */,
 				ED360BA61FE4C0C10031F89F /* Info.plist */,
-				ED360B9E1FE4C0C10031F89F /* ToDo.xcdatamodeld */,
 			);
 			path = ToDo;
+			sourceTree = "<group>";
+		};
+		ED360BAC1FE4C3130031F89F /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				ED360BAD1FE4C3130031F89F /* ToDo.xcdatamodeld */,
+			);
+			path = CoreData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,7 +148,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED360B9A1FE4C0C10031F89F /* ViewController.swift in Sources */,
-				ED360BA01FE4C0C10031F89F /* ToDo.xcdatamodeld in Sources */,
+				ED360BAF1FE4C3130031F89F /* ToDo.xcdatamodeld in Sources */,
 				ED360B981FE4C0C10031F89F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -328,12 +336,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		ED360B9E1FE4C0C10031F89F /* ToDo.xcdatamodeld */ = {
+		ED360BAD1FE4C3130031F89F /* ToDo.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				ED360B9F1FE4C0C10031F89F /* ToDo.xcdatamodel */,
+				ED360BAE1FE4C3130031F89F /* ToDo.xcdatamodel */,
 			);
-			currentVersion = ED360B9F1FE4C0C10031F89F /* ToDo.xcdatamodel */;
+			currentVersion = ED360BAE1FE4C3130031F89F /* ToDo.xcdatamodel */;
 			path = ToDo.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
