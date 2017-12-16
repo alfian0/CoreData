@@ -122,7 +122,10 @@ extension PersonTableViewController {
                 do {
                     try self.manageObjectContext.save()
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    self.reloadData()
+                    self.persons.append(person)
+                    self.tableView.beginUpdates()
+                    self.tableView.insertRows(at: [IndexPath(row: (self.persons.count - 1), section: 0)], with: .fade)
+                    self.tableView.endUpdates()
                 } catch {
                     fatalError("Cannot save new person!")
                 }

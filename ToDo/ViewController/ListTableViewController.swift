@@ -129,8 +129,11 @@ extension ListTableViewController {
                 
                 do {
                     try self.manageObjectContext.save()
+                    self.toDos.append(toDo)
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    self.reloadData()
+                    self.tableView.beginUpdates()
+                    self.tableView.insertRows(at: [IndexPath(row: (self.toDos.count - 1), section: 0)], with: .fade)
+                    self.tableView.endUpdates()
                 } catch {
                     fatalError("Cannot save new to do!")
                 }
