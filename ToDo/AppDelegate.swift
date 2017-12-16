@@ -17,6 +17,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        configureWindow()
+        fetchTestData()
+        
         return true
     }
 
@@ -89,5 +93,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+}
+
+extension AppDelegate {
+    
+    func configureWindow() {
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.makeKeyAndVisible()
+        window?.backgroundColor = UIColor.white
+        
+        let viewController = ListTableViewController()
+            viewController.manageObjectContext = persistentContainer.viewContext
+        window?.rootViewController = viewController
+    }
+    
+    func addTestData() {
+        guard let entity = NSEntityDescription.entity(forEntityName: "ToDo", in: persistentContainer.viewContext) else {
+            fatalError("Could not find entity description!")
+        }
+        
+        for i in 1...25 {
+            let toDo = NSManagedObject(entity: entity, insertInto: persistentContainer.viewContext)
+            toDo.setValue("To Do #\(i)", forKey: "title")
+            toDo.setValue("Descriptions for #\(i)", forKey: "descriptions")
+        }
+        
+        saveContext()
+    }
+    
+    func fetchTestData() {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "ToDo")
+        
+        do {
+            let results = try persistentContainer.viewContext.fetch(fetchRequest)
+            
+            if results.count == 0 {
+                addTestData()
+            }
+        } catch {
+            fatalError("There was a fetch error!")
+        }
+    }
 }
 
