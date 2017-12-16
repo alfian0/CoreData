@@ -19,7 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         configureWindow()
-        fetchTestData()
         
         return true
     }
@@ -58,6 +57,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          error conditions that could cause the creation of the store to fail.
         */
         let container = NSPersistentContainer(name: "ToDo")
+        let description = NSPersistentStoreDescription()
+            description.shouldInferMappingModelAutomatically = true
+            description.shouldMigrateStoreAutomatically = true
+        container.persistentStoreDescriptions.append(description)
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
@@ -101,38 +104,7 @@ extension AppDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         window?.backgroundColor = UIColor.white
-        
-        let viewController = ListTableViewController()
-            viewController.manageObjectContext = persistentContainer.viewContext
-        window?.rootViewController = viewController
-    }
-    
-    func addTestData() {
-        guard let entity = NSEntityDescription.entity(forEntityName: "ToDo", in: persistentContainer.viewContext) else {
-            fatalError("Could not find entity description!")
-        }
-        
-        for i in 1...25 {
-            let toDo = ToDo(entity: entity, insertInto: persistentContainer.viewContext)
-                toDo.title = "To Do #\(i)"
-                toDo.descriptions = "Descriptions for #\(i)"
-        }
-        
-        saveContext()
-    }
-    
-    func fetchTestData() {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "ToDo")
-        
-        do {
-            let results = try persistentContainer.viewContext.fetch(fetchRequest)
-            
-            if results.count == 0 {
-                addTestData()
-            }
-        } catch {
-            fatalError("There was a fetch error!")
-        }
+        window?.rootViewController = AppViewController(manageObjectContext: persistentContainer.viewContext)
     }
 }
 

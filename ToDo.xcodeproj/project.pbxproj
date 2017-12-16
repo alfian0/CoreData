@@ -17,6 +17,11 @@
 		ED360BBF1FE4CB900031F89F /* Person+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED360BBB1FE4CB900031F89F /* Person+CoreDataProperties.swift */; };
 		ED360BC31FE4D03D0031F89F /* ListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED360BC11FE4D03D0031F89F /* ListTableViewController.swift */; };
 		ED360BC41FE4D03D0031F89F /* ListTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED360BC21FE4D03D0031F89F /* ListTableViewController.xib */; };
+		ED360BC71FE4FA120031F89F /* ToDoDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED360BC61FE4FA120031F89F /* ToDoDelegate.swift */; };
+		ED360BCA1FE4FB060031F89F /* PersonTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED360BC81FE4FB060031F89F /* PersonTableViewController.swift */; };
+		ED360BCB1FE4FB060031F89F /* PersonTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED360BC91FE4FB060031F89F /* PersonTableViewController.xib */; };
+		ED360BCE1FE502390031F89F /* AppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED360BCC1FE502390031F89F /* AppViewController.swift */; };
+		ED360BCF1FE502390031F89F /* AppViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED360BCD1FE502390031F89F /* AppViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +37,11 @@
 		ED360BBB1FE4CB900031F89F /* Person+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Person+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		ED360BC11FE4D03D0031F89F /* ListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableViewController.swift; sourceTree = "<group>"; };
 		ED360BC21FE4D03D0031F89F /* ListTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ListTableViewController.xib; sourceTree = "<group>"; };
+		ED360BC61FE4FA120031F89F /* ToDoDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoDelegate.swift; sourceTree = "<group>"; };
+		ED360BC81FE4FB060031F89F /* PersonTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTableViewController.swift; sourceTree = "<group>"; };
+		ED360BC91FE4FB060031F89F /* PersonTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PersonTableViewController.xib; sourceTree = "<group>"; };
+		ED360BCC1FE502390031F89F /* AppViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewController.swift; sourceTree = "<group>"; };
+		ED360BCD1FE502390031F89F /* AppViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AppViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,10 +99,23 @@
 		ED360BC01FE4D00E0031F89F /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				ED360BC51FE4F9F90031F89F /* Delegate */,
 				ED360BC11FE4D03D0031F89F /* ListTableViewController.swift */,
 				ED360BC21FE4D03D0031F89F /* ListTableViewController.xib */,
+				ED360BC81FE4FB060031F89F /* PersonTableViewController.swift */,
+				ED360BC91FE4FB060031F89F /* PersonTableViewController.xib */,
+				ED360BCC1FE502390031F89F /* AppViewController.swift */,
+				ED360BCD1FE502390031F89F /* AppViewController.xib */,
 			);
 			path = ViewController;
+			sourceTree = "<group>";
+		};
+		ED360BC51FE4F9F90031F89F /* Delegate */ = {
+			isa = PBXGroup;
+			children = (
+				ED360BC61FE4FA120031F89F /* ToDoDelegate.swift */,
+			);
+			path = Delegate;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -154,6 +177,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED360BCF1FE502390031F89F /* AppViewController.xib in Resources */,
+				ED360BCB1FE4FB060031F89F /* PersonTableViewController.xib in Resources */,
 				ED360BA51FE4C0C10031F89F /* LaunchScreen.storyboard in Resources */,
 				ED360BA21FE4C0C10031F89F /* Assets.xcassets in Resources */,
 				ED360BC41FE4D03D0031F89F /* ListTableViewController.xib in Resources */,
@@ -167,13 +192,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED360BCE1FE502390031F89F /* AppViewController.swift in Sources */,
 				ED360BBF1FE4CB900031F89F /* Person+CoreDataProperties.swift in Sources */,
 				ED360BBC1FE4CB900031F89F /* ToDo+CoreDataClass.swift in Sources */,
 				ED360BBE1FE4CB900031F89F /* Person+CoreDataClass.swift in Sources */,
 				ED360BAF1FE4C3130031F89F /* ToDo.xcdatamodeld in Sources */,
 				ED360BBD1FE4CB900031F89F /* ToDo+CoreDataProperties.swift in Sources */,
 				ED360B981FE4C0C10031F89F /* AppDelegate.swift in Sources */,
+				ED360BC71FE4FA120031F89F /* ToDoDelegate.swift in Sources */,
 				ED360BC31FE4D03D0031F89F /* ListTableViewController.swift in Sources */,
+				ED360BCA1FE4FB060031F89F /* PersonTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

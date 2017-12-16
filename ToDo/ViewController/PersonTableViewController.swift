@@ -1,5 +1,5 @@
 //
-//  ListTableViewController.swift
+//  PersonTableViewController.swift
 //  ToDo
 //
 //  Created by alfian0 on 12/16/17.
@@ -9,10 +9,10 @@
 import UIKit
 import CoreData
 
-class ListTableViewController: UITableViewController {
+class PersonTableViewController: UITableViewController {
     
     private var manageObjectContext: NSManagedObjectContext!
-    private var toDos = [ToDo]()
+    private var persons = [Person]()
     
     convenience init(manageObjectContext: NSManagedObjectContext) {
         self.init()
@@ -23,10 +23,10 @@ class ListTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = "To Do"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addToDo))
+        navigationItem.title = "Person"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addPerson))
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -42,16 +42,15 @@ class ListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return toDos.count
+        return persons.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
-        let toDo = toDos[indexPath.row]
+        let person = persons[indexPath.row]
         
-        cell.textLabel?.text = toDo.title
-        cell.detailTextLabel?.text = toDo.descriptions
-        
+        cell.textLabel?.text = person.name
+
         return cell
     }
 
@@ -65,11 +64,11 @@ class ListTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            let toDo = toDos[indexPath.row]
-            manageObjectContext.delete(toDo)
+            let person = persons[indexPath.row]
+            manageObjectContext.delete(person)
             do {
                 try manageObjectContext.save()
-                toDos.remove(at: indexPath.row)
+                persons.remove(at: indexPath.row)
                 tableView.deleteRows(at: [indexPath], with: .fade)
             } catch {
                 fatalError("Cannot delete person object!")
@@ -106,33 +105,26 @@ class ListTableViewController: UITableViewController {
     
 }
 
-extension ListTableViewController {
+extension PersonTableViewController {
     
-    @objc func addToDo() -> Void {
-        guard let entity = NSEntityDescription.entity(forEntityName: "ToDo", in: manageObjectContext) else {
+    @objc func addPerson() {
+        guard let entity = NSEntityDescription.entity(forEntityName: "Person", in: manageObjectContext) else {
             fatalError("Could not find entity description!")
         }
-        let alert = UIAlertController(title: "Add To Do", message: "Adding new something to do", preferredStyle: .alert)
-            alert.addTextField { (textField) in
-                textField.placeholder = "Title"
-            }
-            alert.addTextField { (textField) in
-                textField.placeholder = "Description"
-            }
+        let alert = UIAlertController(title: "Add Person", message: "Adding new person to do something", preferredStyle: .alert)
+            alert.addTextField(configurationHandler: nil)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
-
-                guard let title = alert.textFields?.first?.text, let desriptions = alert.textFields?[1].text else { return }
+                guard let text = alert.textFields?.first?.text else { return }
                 action.isEnabled = false
-                let toDo = ToDo(entity: entity, insertInto: self.manageObjectContext)
-                    toDo.title = title
-                    toDo.descriptions = desriptions
-                
+                let person = Person(entity: entity, insertInto: self.manageObjectContext)
+                    person.name = text
+
                 do {
                     try self.manageObjectContext.save()
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     self.reloadData()
                 } catch {
-                    fatalError("Cannot save new to do!")
+                    fatalError("Cannot save new person!")
                 }
             }))
         
@@ -143,14 +135,14 @@ extension ListTableViewController {
     
     func reloadData() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-                return
+            return
         }
-        let fetchRequest = NSFetchRequest<ToDo>(entityName: "ToDo")
+        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
         let persistentContainer = appDelegate.persistentContainer
         
         do {
             let results = try persistentContainer.viewContext.fetch(fetchRequest)
-            toDos = results
+            persons = results
             tableView.reloadData()
         } catch {
             fatalError("There was a fetch error!")

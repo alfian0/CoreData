@@ -19,5 +19,6 @@ extension ToDo {
 
     @NSManaged public var title: String?
     @NSManaged public var descriptions: String?
+    @NSManaged public var assignee: Person?
 
 }

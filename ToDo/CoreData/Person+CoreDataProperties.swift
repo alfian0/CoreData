@@ -18,5 +18,23 @@ extension Person {
     }
 
     @NSManaged public var name: String?
+    @NSManaged public var assigned: NSSet?
+
+}
+
+// MARK: Generated accessors for assigned
+extension Person {
+
+    @objc(addAssignedObject:)
+    @NSManaged public func addToAssigned(_ value: ToDo)
+
+    @objc(removeAssignedObject:)
+    @NSManaged public func removeFromAssigned(_ value: ToDo)
+
+    @objc(addAssigned:)
+    @NSManaged public func addToAssigned(_ values: NSSet)
+
+    @objc(removeAssigned:)
+    @NSManaged public func removeFromAssigned(_ values: NSSet)
 
 }
