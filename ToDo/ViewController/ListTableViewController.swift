@@ -34,7 +34,7 @@ class ListTableViewController: UITableViewController {
             fetchRequest.sortDescriptors = [
                 NSSortDescriptor(key: "title", ascending: true)
             ]
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: coreDataStack.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: coreDataStack.managedObjectContext, sectionNameKeyPath: #keyPath(ToDo.title), cacheName: nil)
         fetchedResultsController.delegate = self
     }
     
@@ -48,7 +48,7 @@ class ListTableViewController: UITableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 1
+        return fetchedResultsController.sections?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -82,6 +82,10 @@ class ListTableViewController: UITableViewController {
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return fetchedResultsController.sections?[section].name
     }
 
     /*
@@ -128,6 +132,10 @@ extension ListTableViewController: NSFetchedResultsControllerDelegate {
         }
     }
     
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.beginUpdates()
+    }
+    
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.performBatchUpdates({
             for operation in blockOperation {
@@ -139,6 +147,8 @@ extension ListTableViewController: NSFetchedResultsControllerDelegate {
             let indexPath = IndexPath(row: row - 1, section: 0)
             self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
         }
+        
+        tableView.endUpdates()
     }
 }
 
