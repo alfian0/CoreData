@@ -12,7 +12,8 @@ import CoreData
 class ListTableViewController: UITableViewController {
     
     private var coreDataStack: CoreDataStack!
-    private var toDos = [ToDo]()
+    private var fetchedResultsController: NSFetchedResultsController<ToDo>!
+    private var blockOperation = [BlockOperation]()
     
     convenience init(coreDataStack: CoreDataStack) {
         self.init()
@@ -28,6 +29,13 @@ class ListTableViewController: UITableViewController {
             UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addToDo(_:))),
             UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(filter(_:)))
         ]
+        
+        let fetchRequest = NSFetchRequest<ToDo>(entityName: "ToDo")
+            fetchRequest.sortDescriptors = [
+                NSSortDescriptor(key: "title", ascending: true)
+            ]
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: coreDataStack.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -45,12 +53,12 @@ class ListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return toDos.count
+        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
-        let toDo = toDos[indexPath.row]
+        let toDo = fetchedResultsController.object(at: indexPath)
         
         cell.textLabel?.text = toDo.title
         cell.detailTextLabel?.text = toDo.descriptions
@@ -68,11 +76,9 @@ class ListTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            let toDo = toDos[indexPath.row]
+            let toDo = fetchedResultsController.object(at: indexPath)
             coreDataStack.managedObjectContext.delete(toDo)
             coreDataStack.saveContext()
-            toDos.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
@@ -105,6 +111,37 @@ class ListTableViewController: UITableViewController {
     
 }
 
+extension ListTableViewController: NSFetchedResultsControllerDelegate {
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        
+        switch type {
+        case .insert:
+            blockOperation.append(BlockOperation(block: {
+                self.tableView.insertRows(at: [newIndexPath!], with: .fade)
+            }))
+        case .delete:
+            blockOperation.append(BlockOperation(block: {
+                self.tableView.deleteRows(at: [indexPath!], with: .fade)
+            }))
+        default: break
+        }
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.performBatchUpdates({
+            for operation in blockOperation {
+                operation.start()
+            }
+        }) { (_) in
+            self.blockOperation.removeAll()
+            let row = self.fetchedResultsController.sections?[0].numberOfObjects ?? 0
+            let indexPath = IndexPath(row: row - 1, section: 0)
+            self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        }
+    }
+}
+
 extension ListTableViewController {
     
     @objc func addToDo(_ sender: AnyObject) -> Void {
@@ -126,11 +163,7 @@ extension ListTableViewController {
                     toDo.title = title
                     toDo.descriptions = desriptions
                 self.coreDataStack.saveContext()
-                self.toDos.append(toDo)
                 self.navigationItem.rightBarButtonItems?[0].isEnabled = true
-                self.tableView.beginUpdates()
-                self.tableView.insertRows(at: [IndexPath(row: (self.toDos.count - 1), section: 0)], with: .fade)
-                self.tableView.endUpdates()
             }))
         
         present(alert, animated: true) {
@@ -157,16 +190,15 @@ extension ListTableViewController {
     }
     
     func reloadData(type: String? = nil) {
-        let fetchRequest = NSFetchRequest<ToDo>(entityName: "ToDo")
-        
         if let filter = type {
             let predicate = NSPredicate(format: "title == %@", filter)
-            fetchRequest.predicate = predicate
+            fetchedResultsController.fetchRequest.predicate = predicate
+        } else {
+            fetchedResultsController.fetchRequest.predicate = nil
         }
         
         do {
-            let results = try coreDataStack.managedObjectContext.fetch(fetchRequest)
-            toDos = results
+            try fetchedResultsController.performFetch()
             self.navigationItem.rightBarButtonItems?[1].isEnabled = true
         } catch {
             fatalError("There was a fetch error!")

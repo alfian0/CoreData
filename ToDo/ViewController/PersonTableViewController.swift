@@ -12,7 +12,8 @@ import CoreData
 class PersonTableViewController: UITableViewController {
     
     private var coreDataStack: CoreDataStack!
-    private var persons = [Person]()
+    private var fetchedResultsController: NSFetchedResultsController<Person>!
+    private var blockOperation = [BlockOperation]()
     
     convenience init(coreDataStack: CoreDataStack) {
         self.init()
@@ -25,6 +26,13 @@ class PersonTableViewController: UITableViewController {
 
         navigationItem.title = "Person"
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addPerson))
+        
+        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
+            fetchRequest.sortDescriptors = [
+                NSSortDescriptor(key: "name", ascending: true)
+            ]
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: coreDataStack.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -42,12 +50,12 @@ class PersonTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return persons.count
+        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
-        let person = persons[indexPath.row]
+        let person = fetchedResultsController.object(at: indexPath)
         
         cell.textLabel?.text = person.name
 
@@ -64,11 +72,9 @@ class PersonTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            let person = persons[indexPath.row]
+            let person = fetchedResultsController.object(at: indexPath)
             coreDataStack.managedObjectContext.delete(person)
             coreDataStack.saveContext()
-            persons.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
@@ -101,6 +107,37 @@ class PersonTableViewController: UITableViewController {
     
 }
 
+extension PersonTableViewController: NSFetchedResultsControllerDelegate {
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        
+        switch type {
+        case .insert:
+            blockOperation.append(BlockOperation(block: {
+                self.tableView.insertRows(at: [newIndexPath!], with: .fade)
+            }))
+        case .delete:
+            blockOperation.append(BlockOperation(block: {
+                self.tableView.deleteRows(at: [indexPath!], with: .fade)
+            }))
+        default: break
+        }
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.performBatchUpdates({
+            for operation in blockOperation {
+                operation.start()
+            }
+        }) { (_) in
+            self.blockOperation.removeAll()
+            let row = self.fetchedResultsController.sections?[0].numberOfObjects ?? 0
+            let indexPath = IndexPath(row: row - 1, section: 0)
+            self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        }
+    }
+}
+
 extension PersonTableViewController {
     
     @objc func addPerson(_ sender: AnyObject) {
@@ -117,10 +154,6 @@ extension PersonTableViewController {
 
                 self.coreDataStack.saveContext()
                 self.navigationItem.rightBarButtonItem?.isEnabled = true
-                self.persons.append(person)
-                self.tableView.beginUpdates()
-                self.tableView.insertRows(at: [IndexPath(row: (self.persons.count - 1), section: 0)], with: .fade)
-                self.tableView.endUpdates()
             }))
         
         present(alert, animated: true) {
@@ -129,11 +162,8 @@ extension PersonTableViewController {
     }
     
     func reloadData() {
-        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
-        
         do {
-            let results = try coreDataStack.managedObjectContext.fetch(fetchRequest)
-            persons = results
+            try fetchedResultsController.performFetch()
         } catch {
             fatalError("There was a fetch error!")
         }
