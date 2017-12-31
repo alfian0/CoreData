@@ -23,7 +23,26 @@
 		ED360BCE1FE502390031F89F /* AppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED360BCC1FE502390031F89F /* AppViewController.swift */; };
 		ED360BCF1FE502390031F89F /* AppViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED360BCD1FE502390031F89F /* AppViewController.xib */; };
 		ED360BD21FE532880031F89F /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED360BD11FE532880031F89F /* CoreDataStack.swift */; };
+		EDC3F49D1FF8FE1C007E5449 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDC3F4941FF8FDE0007E5449 /* RxCocoa.framework */; };
+		EDC3F49E1FF8FE1C007E5449 /* RxCocoa.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EDC3F4941FF8FDE0007E5449 /* RxCocoa.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EDC3F49F1FF8FE1C007E5449 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDC3F4951FF8FDE0007E5449 /* RxSwift.framework */; };
+		EDC3F4A01FF8FE1C007E5449 /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EDC3F4951FF8FDE0007E5449 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EDC3F49C1FF8FDF4007E5449 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				EDC3F4A01FF8FE1C007E5449 /* RxSwift.framework in Embed Frameworks */,
+				EDC3F49E1FF8FE1C007E5449 /* RxCocoa.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		ED360B941FE4C0C10031F89F /* ToDo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,6 +63,8 @@
 		ED360BCC1FE502390031F89F /* AppViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewController.swift; sourceTree = "<group>"; };
 		ED360BCD1FE502390031F89F /* AppViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AppViewController.xib; sourceTree = "<group>"; };
 		ED360BD11FE532880031F89F /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		EDC3F4941FF8FDE0007E5449 /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
+		EDC3F4951FF8FDE0007E5449 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +72,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDC3F49F1FF8FE1C007E5449 /* RxSwift.framework in Frameworks */,
+				EDC3F49D1FF8FE1C007E5449 /* RxCocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,6 +85,7 @@
 			children = (
 				ED360B961FE4C0C10031F89F /* ToDo */,
 				ED360B951FE4C0C10031F89F /* Products */,
+				EDC3F4931FF8FDE0007E5449 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -129,6 +153,15 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
+		EDC3F4931FF8FDE0007E5449 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EDC3F4941FF8FDE0007E5449 /* RxCocoa.framework */,
+				EDC3F4951FF8FDE0007E5449 /* RxSwift.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -139,6 +172,7 @@
 				ED360B901FE4C0C10031F89F /* Sources */,
 				ED360B911FE4C0C10031F89F /* Frameworks */,
 				ED360B921FE4C0C10031F89F /* Resources */,
+				EDC3F49C1FF8FDF4007E5449 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -344,6 +378,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9GE8EQEDQB;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = ToDo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = id.alfian.ToDo;
@@ -359,6 +397,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9GE8EQEDQB;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = ToDo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = id.alfian.ToDo;
